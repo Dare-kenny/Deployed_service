@@ -13,8 +13,8 @@
             </not>
         </preConditions>
         <createTable tableName="personnel_credentials">
-            <column name="id" type="BIGINT" autoIncrement="true">
-                <constraints primaryKey="true"/>
+            <column name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="username" type="VARCHAR(255)"/>
             <column name="password" type="VARCHAR(255)"/>
@@ -30,8 +30,8 @@
             </not>
         </preConditions>
         <createTable tableName="invoice_details_table">
-            <column name="id" type="BIGINT" autoIncrement="true">
-                <constraints primaryKey="true"/>
+            <column name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="invoice_no" type="VARCHAR(500)">
                 <constraints nullable="false"/>
@@ -61,8 +61,6 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
-
-        <!-- Remove this foreign key as it’s invalid (id linking to id is not logical) -->
     </changeSet>
 
     <!-- Create invoice_rules_table -->
@@ -73,8 +71,8 @@
             </not>
         </preConditions>
         <createTable tableName="invoice_rules_table">
-            <column name="id" type="BIGINT" autoIncrement="true">
-                <constraints primaryKey="true"/>
+            <column name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="min_amount" type="NUMERIC(100,2)"/>
             <column name="max_amount" type="NUMERIC(100,2)"/>
@@ -83,7 +81,7 @@
         </createTable>
     </changeSet>
 
-    <!-- Drop incorrect foreign key -->
+    <!-- Drop old invalid foreign key if it exists -->
     <changeSet id="drop_old_fk" author="Damilare">
         <preConditions onFail="MARK_RAN">
             <foreignKeyConstraintExists 
@@ -94,7 +92,7 @@
                 constraintName="joining_invoice_details_table"/>
     </changeSet>
 
-    <!-- Add personnel_id to invoice_details_table -->
+    <!-- Add personnel_id column -->
     <changeSet id="add_personnel_id_column" author="Damilare">
         <addColumn tableName="invoice_details_table">
             <column name="personnel_id" type="BIGINT"/>
@@ -110,11 +108,6 @@
                 referencedTableName="personnel_credentials"
                 referencedColumnNames="id"
                 onDelete="SET NULL"/>
-    </changeSet>
-
-    <!-- Reset invoice_details_table ID sequence (PostgreSQL-style) -->
-    <changeSet id="reset_invoice_id_sequence" author="Damilare">
-        <sql>ALTER SEQUENCE invoice_details_table_id_seq RESTART WITH 1;</sql>
     </changeSet>
 
 </databaseChangeLog>
