@@ -1,11 +1,13 @@
-# Use a base image with Java
-FROM eclipse-temurin:17-jdk-alpine
-
-# Set working directory
+# Start from a Maven build stage
+FROM maven:3.9.6-eclipse-temurin-17 AS build
 WORKDIR /app
+COPY . .
+RUN mvn clean package -DskipTests
 
-# Add built jar to the image
-COPY target/invoisecure.jar app.jar
+# Use a lightweight Java runtime to run the app
+FROM eclipse-temurin:17-jre-alpine
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
 
-# Run the jar file
+EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
