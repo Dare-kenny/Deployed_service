@@ -110,4 +110,8 @@
                 onDelete="SET NULL"/>
     </changeSet>
 
+    <changeSet id="reset_personnel_id_sequence" author="Damilare">
+        <sql>ALTER SEQUENCE personnel_credentials_id_seq RESTART WITH 1;</sql>
+    </changeSet>
+
 </databaseChangeLog>
