@@ -1,13 +1,18 @@
-# Start from a Maven build stage
+# Use Maven to build the app
 FROM maven:3.9.6-eclipse-temurin-17 AS build
+
 WORKDIR /app
 COPY . .
+
+# Go into the Spring Boot folder and build
+WORKDIR /app/Invoisecure
 RUN mvn clean package -DskipTests
 
-# Use a lightweight Java runtime to run the app
-FROM eclipse-temurin:17-jre-alpine
-WORKDIR /app
-COPY --from=build /app/target/*.jar app.jar
+# Use a lighter JRE image to run the app
+FROM eclipse-temurin:17-jdk-alpine
 
-EXPOSE 8080
+# Copy the built JAR from the builder stage
+COPY --from=build /app/Invoisecure/target/*.jar app.jar
+
+# Run the app
 ENTRYPOINT ["java", "-jar", "app.jar"]
